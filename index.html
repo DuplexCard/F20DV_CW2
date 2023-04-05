@@ -1,1 +1,33 @@
-test
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 v7 Example</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <!-- HTML content goes here -->
+  </body>
+</html>
+
+
+<script>
+
+d3.csv("SDG_DATA_NATIONAL.csv", function(data) {
+  // Filter data by indicator_id and year
+  var filteredData = data.filter(function(d) {
+    return d.indicator_id === "EA.8.AG25T99" && d.year === "2022";
+  });
+  console.log("test")
+  // Store filtered data in an array
+  var dataArray = [];
+  filteredData.forEach(function(d) {
+    dataArray.push(d);
+  });
+  
+  console.log(dataArray)
+
+});
+
+
+</script>
