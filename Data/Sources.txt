@@ -1,0 +1,3 @@
+Educational Attainment: https://unstats.un.org/sdgs/dataportal
+Gov Spending: https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators
+Crime: https://www.numbeo.com/crime/rankings_by_country.jsp?title=2023&displayColumn=0
