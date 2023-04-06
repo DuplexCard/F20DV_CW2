@@ -16,7 +16,7 @@ function reveal() {
 
 window.addEventListener("scroll", reveal);
   
-d3.csv("https://raw.githubusercontent.com/DuplexCard/F20DV_CW2/8b5a4710e175b71cdce7bef9f45632f8896a8041/Data/Educational%20Attainment.csv").then(data => {
+d3.csv("https://raw.githubusercontent.com/DuplexCard/F20DV_CW2/2186cb19bd7ce096f0d734e81671c2c00867d38b/Data/Educational%20Attainment%20New.csv").then(data => {
     // extract the most recent datapoint by year for each country
     // Extract the country names with the value of their most recent datapoint
     var countryValues = data.map(function(d) {
