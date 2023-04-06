@@ -1,33 +1,123 @@
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="script.js"></script>
+
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>D3 v7 Example</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>F20DV CW2 Abdullah Sayed</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
+
+  
   <body>
-    <!-- HTML content goes here -->
+
+  
+
+    <section>
+      <h1>Scroll Down to Start &#8595;</h1>
+    </section>
+    <section>
+    <div class="container reveal fade-bottom">
+      <div id="chart"></div>
+
+      <h2>Welcome!</h2>
+      <center><p>
+        In this data visualization, I explore the relationship between overall
+        government expenditure and education and crime rates. While government
+        spending is not specifically focused on these areas, I aim to provide
+        insight into the potential impact of overall government spending on
+        education and crime rates. The comprehensive data set includes
+        information from the Sustainable Development Goal indicators compiled by
+        the United Nations, academic surveys, and international financial
+        institutions. This data visualization is a useful tool for policymakers,
+        researchers, and anyone interested in understanding the potential impact
+        of overall government spending on education and crime rates.
+        </p></center>
+      </div>
+    </div>
+  </section>
+  
+  <section>
+    <div class="container reveal fade-bottom">
+      <h2>The Variables Explained</h2>
+      <div class="text-container">
+        <div class="text-box">
+          <h3>Crime index</h3>
+          <p>
+            The Crime Index is an estimation of the overall level of crime in a
+            given country, based on surveys. The surveys use a range of values
+            from -2 to +2, which are then filtered to eliminate potential spam,
+            and presented on a scale of 0 to 100. The index is updated using
+            data up to 36 months old and is remade twice per year. The Safety
+            Index is the opposite of the Crime Index, with a high Safety Index
+            indicating a very safe city. The actual formulas used to calculate
+            the indices are subject to change, but at present, complex empirical
+            formulas can be found <a
+            href="https://www.numbeo.com/crime/indices_explained.jsp">here</a>.
+
+            
+          </p>
+        </div>
+        <div class="text-box">
+          <h3>Country Expenses (% of GDP)</h3>
+          <p>
+            As defined in the source "Expense is cash payments for operating
+            activities of the government in providing goods and services. It
+            includes compensation of employees (such as wages and salaries),
+            interest and subsidies, grants, social benefits, and other expenses
+            such as rent and dividends." This information is taken from the
+            World Development Indicators
+          </p>
+        </div>
+        <div class="text-box">
+          <h3>"Educational attainment, at least Bachelor's or equivalent</h3>
+          <p>
+            To determine the indicator, the percentage of individuals aged 25
+            and older who have completed a Bachelor's degree or an equivalent
+            qualification is calculated. This is achieved by dividing the number
+            of people who meet this criterion by the total population of that
+            age group, then multiplying the result by 100. If the resulting
+            value is zero or so small that it would round to zero, the number 0
+            is used instead. The UNESCO Institute for Statistics is responsible
+            for collecting the data, which is primarily sourced from national
+            population censuses, household surveys, and labor force surveys. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container reveal fade-bottom">
+      <h2>Caption</h2>
+      <div class="text-container">
+        <div class="text-box">
+          <h3>Section Text</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore
+            eius molestiae perferendis eos provident vitae iste.
+          </p>
+        </div>
+        <div class="text-box">
+          <h3>Section Text</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore
+            eius molestiae perferendis eos provident vitae iste.
+          </p>
+        </div>
+        <div class="text-box">
+          <h3>Section Text</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore
+            eius molestiae perferendis eos provident vitae iste.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
   </body>
 </html>
-
-
-<script>
-
-d3.csv("SDG_DATA_NATIONAL.csv", function(data) {
-  // Filter data by indicator_id and year
-  var filteredData = data.filter(function(d) {
-    return d.indicator_id === "EA.8.AG25T99" && d.year === "2022";
-  });
-  console.log("test")
-  // Store filtered data in an array
-  var dataArray = [];
-  filteredData.forEach(function(d) {
-    dataArray.push(d);
-  });
-  
-  console.log(dataArray)
-
-});
-
-
-</script>
