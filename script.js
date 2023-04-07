@@ -322,7 +322,6 @@ const circles = svg
       if (!filteredData) {
         return false;
       }
-      // Check if the data point's country is in the filteredData
       return filteredData.some((fd) => fd.country === d.country);
     });
   }
@@ -346,10 +345,12 @@ const circles = svg
       })
   );
   return {
+    svg,
+    x,
+    y,
     update: updateChart,
     getCircles: () => circles
-  }
-
+  };
 }
 
 
@@ -371,37 +372,30 @@ function updateOtherChart(extent) {
   }
 }
 
-
-const scatterPlot1 = createScatterPlot("#scatter1", "education", data, false);
-const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data, true);
+const scatterPlot1 = createScatterPlot("#scatter1", "education", data);
+const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data);
 
 updateScatter1 = scatterPlot1.update;
 updateScatter2 = scatterPlot2.update;
 
-function updateOtherChart(extent, isSecondChart) {
-  if (updateScatter1 && updateScatter2) {
-    if (!extent) {
-      updateScatter1(undefined);
-      updateScatter2(undefined);
-    } else {
-      const [x0, x1, y0, y1] = extent;
-      const yKey = isSecondChart ? "crimeIndex" : "education";
-      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1 && d[yKey] >= y0 && d[yKey] <= y1);
-      updateScatter1(filteredData);
-      updateScatter2(filteredData);
-    }
-  }
-}
 
-function brushended(event, isSecondChart) {
+function brushended(event, yKey, chart, updateCurrent, updateOther) {
   const selection = event.selection;
+  const { x, y } = chart;
   const extent = selection && [
     x.invert(selection[0][0]),
     x.invert(selection[1][0]),
     y.invert(selection[1][1]),
     y.invert(selection[0][1]),
   ];
-  updateOtherChart(extent, isSecondChart);
+  if (extent) {
+    const filteredData = data.filter((d) => d.expense >= extent[0] && d.expense <= extent[1] && d[yKey] >= extent[2] && d[yKey] <= extent[3]);
+    updateCurrent(filteredData);
+    updateOther(filteredData);
+  } else {
+    updateCurrent(undefined);
+    updateOther(undefined);
+  }
 }
 
 scatterPlot1.svg.call(
@@ -410,7 +404,7 @@ scatterPlot1.svg.call(
       [0, 0],
       [width, height],
     ])
-    .on("end", (event) => brushended(event, false))
+    .on("end", (event) => brushended(event, "education", { x: scatterPlot1.x, y: scatterPlot1.y }, updateScatter1, updateScatter2))
 );
 
 scatterPlot2.svg.call(
@@ -419,7 +413,7 @@ scatterPlot2.svg.call(
       [0, 0],
       [width, height],
     ])
-    .on("end", (event) => brushended(event, true))
+    .on("end", (event) => brushended(event, "crimeIndex", { x: scatterPlot2.x, y: scatterPlot2.y }, updateScatter2, updateScatter1))
 );
       });
     });
