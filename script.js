@@ -277,7 +277,7 @@ ____________________________________________________________________________
   
       
 
-*/  function createScatterPlot(container, yKey, data) {
+*/  function createScatterPlot(container, yKey, data, isSecondChart) {
   const margin = { top: 10, right: 30, bottom: 30, left: 60 },
   width = 460 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
@@ -317,16 +317,16 @@ const circles = svg
   .style("fill", "steelblue")
   .style("opacity", 0.8);
 
-  function updateChart(filteredData, y0, y1) {
+  function updateChart(filteredData) {
     circles.classed("selected", (d) => {
       if (!filteredData) {
         return false;
       }
-      const sameXValue = filteredData.some((fd) => fd.expense === d.expense);
-      const withinYRange = d[yKey] >= y0 && d[yKey] <= y1;
-      return sameXValue && withinYRange;
+      // Check if the data point's country is in the filteredData
+      return filteredData.some((fd) => fd.country === d.country);
     });
   }
+
 
   svg.call(
     d3.brush()
@@ -356,6 +356,7 @@ const circles = svg
 
 let updateScatter1, updateScatter2;
 
+
 function updateOtherChart(extent) {
   if (updateScatter1 && updateScatter2) {
     if (!extent) {
@@ -363,18 +364,63 @@ function updateOtherChart(extent) {
       updateScatter2(undefined);
     } else {
       const [x0, x1, y0, y1] = extent;
-      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1);
-      updateScatter1(filteredData, y0, y1);
-      updateScatter2(filteredData, y0, y1);
+      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1 && d.education >= y0 && d.education <= y1);
+      updateScatter1(filteredData);
+      updateScatter2(filteredData);
     }
   }
 }
 
-const scatterPlot1 = createScatterPlot("#scatter1", "education", data);
-const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data);
+
+const scatterPlot1 = createScatterPlot("#scatter1", "education", data, false);
+const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data, true);
 
 updateScatter1 = scatterPlot1.update;
 updateScatter2 = scatterPlot2.update;
+
+function updateOtherChart(extent, isSecondChart) {
+  if (updateScatter1 && updateScatter2) {
+    if (!extent) {
+      updateScatter1(undefined);
+      updateScatter2(undefined);
+    } else {
+      const [x0, x1, y0, y1] = extent;
+      const yKey = isSecondChart ? "crimeIndex" : "education";
+      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1 && d[yKey] >= y0 && d[yKey] <= y1);
+      updateScatter1(filteredData);
+      updateScatter2(filteredData);
+    }
+  }
+}
+
+function brushended(event, isSecondChart) {
+  const selection = event.selection;
+  const extent = selection && [
+    x.invert(selection[0][0]),
+    x.invert(selection[1][0]),
+    y.invert(selection[1][1]),
+    y.invert(selection[0][1]),
+  ];
+  updateOtherChart(extent, isSecondChart);
+}
+
+scatterPlot1.svg.call(
+  d3.brush()
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .on("end", (event) => brushended(event, false))
+);
+
+scatterPlot2.svg.call(
+  d3.brush()
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .on("end", (event) => brushended(event, true))
+);
       });
     });
   });
