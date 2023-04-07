@@ -29,18 +29,21 @@ section {
   align-items: center;
 }
 section:nth-child(1) {
-  color: #e0ffff;
+  color: #ffffff;
 }
 section:nth-child(2) {
   color: #42455a;
   background: #edecf0;
 }
 section:nth-child(3) {
-  color: #e0ffff;
+  color: #ffffff;
 }
 section:nth-child(4) {
   color: #42455a;
-  background: #edecf0;
+  background: #ffffff;
+}
+section:nth-child(5) {
+  color: #ffffff;
 }
 section .container {
   margin: 100px;
@@ -60,9 +63,33 @@ section .text-container {
 section .text-container .text-box {
   margin: 20px;
   padding: 20px;
-  background: #8878c3;
+  background: #786ba8;
+  border-radius: 5pt;
 }
+
+section .text-container .text-box2 {
+  margin: 20px;
+  padding: 20px;
+  background: #c0b1f7;
+  border-radius: 5pt;
+}
+
+section .text-container .graph {
+  margin: 20px;
+  padding: 20px;
+  color: black;
+  background: #ffffff;
+  outline: 2px solid black;
+  border-radius: 5pt;
+}
+
 section .text-container .text-box h3 {
+  font-size: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+section .text-container .text-box2 h3 {
   font-size: 30px;
   text-align: center;
   text-transform: uppercase;
@@ -113,4 +140,17 @@ section .text-container .text-box h3 {
       transform: translateY(0);
       opacity: 1;
     }
+  }
+  .circle {
+    fill-opacity: 0.5;
+    fill: #69b3a2;
+  }
+  
+  .selected {
+    stroke: black;
+    stroke-width: 2;
+  }
+  circle.selected {
+    fill: red;
+    opacity: 1;
   }

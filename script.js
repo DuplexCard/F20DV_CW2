@@ -53,7 +53,7 @@ d3.csv("https://raw.githubusercontent.com/DuplexCard/F20DV_CW2/2186cb19bd7ce096f
   });
 
 const data = countryValues
-
+/*
     // 4. Create SVG container
     const width = 800;
     const height = 600;
@@ -157,6 +157,224 @@ const data = countryValues
         .attr('y', -10)
         .text('Crime Index')
         .attr('text-anchor', 'end');
+
+        
+
+____________________________________________________________________________
+
+        function correlation(xValues, yValues) {
+          const xMean = d3.mean(xValues);
+          const yMean = d3.mean(yValues);
+          const xStdDev = d3.deviation(xValues);
+          const yStdDev = d3.deviation(yValues);
+  
+          const n = xValues.length;
+          let sum = 0;
+  
+          for (let i = 0; i < n; i++) {
+              sum += ((xValues[i] - xMean) / xStdDev) * ((yValues[i] - yMean) / yStdDev);
+          }
+  
+          return sum / (n - 1);
+      }
+
+
+        const keys = ['education', 'crimeIndex', 'expense'];
+        const correlationData = keys.map(xKey => keys.map(yKey => {
+            const xValues = data.map(d => d[xKey]);
+            const yValues = data.map(d => d[yKey]);
+            const corr = correlation(xValues, yValues);
+            return {x: xKey, y: yKey, value: corr};
+        })).flat();
+    
+        // 2. Create SVG container
+        const margin = {top: 20, right: 80, bottom: 20, left: 20},
+            width = 600 - margin.left - margin.right,
+            height = 600 - margin.top - margin.bottom;
+    
+        const svg = d3.select("#corr")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+        // 3. Define the scales and axes
+        const domain = Array.from(new Set(correlationData.map(function (d) {
+            return d.x
+
+          })));
+
+          const color = d3.scaleLinear()
+              .domain([-1, 0, 1])
+              .range(["#B22222", "#fff", "#000080"]);
+      
+          const size = d3.scaleSqrt()
+              .domain([0, 1])
+              .range([0, 9]);
+      
+          const x = d3.scalePoint()
+              .range([0, width])
+              .domain(domain);
+      
+          const y = d3.scalePoint()
+              .range([0, height])
+              .domain(domain);
+      
+          // 4. Create elements for each cell of the correlogram
+          const cor = svg.selectAll(".cor")
+              .data(correlationData)
+              .join("g")
+              .attr("class", "cor")
+              .attr("transform", function (d) {
+                  return `translate(${x(d.x)}, ${y(d.y)})`;
+              });
+      
+          // 5. Add text and circles as needed
+          cor.filter(function (d) {
+              const ypos = domain.indexOf(d.y);
+              const xpos = domain.indexOf(d.x);
+              return xpos <= ypos;
+          })
+              .append("text")
+              .attr("y", 5)
+              .attr("x", -15)
+              .text(function (d) {
+                  if (d.x === d.y) {
+                      return d.x;
+                  } else {
+                      return d.value.toFixed(2);
+                  }
+              })
+              .style("font-size", 18)
+              .style("text-align", "center")
+              .style("fill", function (d) {
+                  if (d.x === d.y) {
+                      return "#000";
+                  } else {
+                      return color(d.value);
+                  }
+              });
+      
+          cor.filter(function (d) {
+              const ypos = domain.indexOf(d.y);
+              const xpos = domain.indexOf(d.x);
+              return xpos > ypos;
+          })
+              .append("circle")
+              .attr("r", function (d) {
+                  return size(2*Math.abs(d.value));
+              })
+              .style("fill", function (d) {
+                  if (d.x === d.y) {
+                      return "#000";
+                  } else {
+                      return color(d.value);
+                  }
+              })
+              
+              .style("opacity", 1);
+  
+      
+
+*/  function createScatterPlot(container, yKey, data) {
+  const margin = { top: 10, right: 30, bottom: 30, left: 60 },
+  width = 460 - margin.left - margin.right,
+  height = 400 - margin.top - margin.bottom;
+
+const svg = d3
+  .select(container)
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+const x = d3
+  .scaleLinear()
+  .domain(d3.extent(data, (d) => d.expense))
+  .range([0, width]);
+svg
+  .append("g")
+  .attr("transform", `translate(0, ${height})`)
+  .call(d3.axisBottom(x));
+
+const y = d3
+  .scaleLinear()
+  .domain(d3.extent(data, (d) => d[yKey]))
+  .range([height, 0]);
+svg.append("g").call(d3.axisLeft(y));
+
+const circles = svg
+  .append("g")
+  .selectAll("circle")
+  .data(data)
+  .enter()
+  .append("circle")
+  .attr("cx", (d) => x(d.expense))
+  .attr("cy", (d) => y(d[yKey]))
+  .attr("r", 4)
+  .style("fill", "steelblue")
+  .style("opacity", 0.8);
+
+  function updateChart(filteredData, y0, y1) {
+    circles.classed("selected", (d) => {
+      if (!filteredData) {
+        return false;
+      }
+      const sameXValue = filteredData.some((fd) => fd.expense === d.expense);
+      const withinYRange = d[yKey] >= y0 && d[yKey] <= y1;
+      return sameXValue && withinYRange;
+    });
+  }
+
+  svg.call(
+    d3.brush()
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("end", (event) => {
+        const selection = event.selection;
+        const extent = selection && [
+          x.invert(selection[0][0]),
+          x.invert(selection[1][0]),
+          y.invert(selection[1][1]),
+          y.invert(selection[0][1]),
+        ];
+        updateOtherChart(extent);
+      })
+  );
+  return {
+    update: updateChart,
+    getCircles: () => circles
+  }
+
+}
+
+
+
+let updateScatter1, updateScatter2;
+
+function updateOtherChart(extent) {
+  if (updateScatter1 && updateScatter2) {
+    if (!extent) {
+      updateScatter1(undefined);
+      updateScatter2(undefined);
+    } else {
+      const [x0, x1, y0, y1] = extent;
+      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1);
+      updateScatter1(filteredData, y0, y1);
+      updateScatter2(filteredData, y0, y1);
+    }
+  }
+}
+
+const scatterPlot1 = createScatterPlot("#scatter1", "education", data);
+const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data);
+
+updateScatter1 = scatterPlot1.update;
+updateScatter2 = scatterPlot2.update;
       });
     });
   });
