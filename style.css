@@ -53,10 +53,15 @@ section h1 {
   margin: 20px;
 }
 section h2 {
-  font-size: 40px;
+  font-size: px;
   text-align: center;
   text-transform: uppercase;
 }
+section p {
+  font-size: 14px;
+  text-align: center;
+}
+
 section .text-container {
   display: flex;
 }
@@ -79,8 +84,8 @@ section .text-container .graph {
   padding: 20px;
   color: black;
   background: #ffffff;
-  outline: 2px solid black;
-  border-radius: 5pt;
+  outline: 1.5px solid black;
+  border-radius: 10pt;
 }
 
 section .text-container .text-box h3 {

@@ -52,6 +52,8 @@ d3.csv("https://raw.githubusercontent.com/DuplexCard/F20DV_CW2/2186cb19bd7ce096f
     return d.hasOwnProperty('country') && d.hasOwnProperty('education') && d.hasOwnProperty('crimeIndex') && d.hasOwnProperty('expense');
   });
 
+
+  console.log(countryValues)
 const data = countryValues
 /*
     // 4. Create SVG container
@@ -161,7 +163,7 @@ const data = countryValues
         
 
 ____________________________________________________________________________
-
+*/  
         function correlation(xValues, yValues) {
           const xMean = d3.mean(xValues);
           const yMean = d3.mean(yValues);
@@ -189,8 +191,8 @@ ____________________________________________________________________________
     
         // 2. Create SVG container
         const margin = {top: 20, right: 80, bottom: 20, left: 20},
-            width = 600 - margin.left - margin.right,
-            height = 600 - margin.top - margin.bottom;
+            width = 460 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
     
         const svg = d3.select("#corr")
             .append("svg")
@@ -246,7 +248,7 @@ ____________________________________________________________________________
                       return d.value.toFixed(2);
                   }
               })
-              .style("font-size", 18)
+              .style("font-size", 14)
               .style("text-align", "center")
               .style("fill", function (d) {
                   if (d.x === d.y) {
@@ -277,45 +279,46 @@ ____________________________________________________________________________
   
       
 
-*/  function createScatterPlot(container, yKey, data, isSecondChart) {
-  const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-  width = 460 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+//_________________________________________________________________________
 
-const svg = d3
-  .select(container)
-  .append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+function createScatterPlot(container, yKey, data, brushended) {
+  const margin = { top: 50, right: 30, bottom: 50, left: 60 },
+    width = 460 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
-const x = d3
-  .scaleLinear()
-  .domain(d3.extent(data, (d) => d.expense))
-  .range([0, width]);
-svg
-  .append("g")
-  .attr("transform", `translate(0, ${height})`)
-  .call(d3.axisBottom(x));
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-const y = d3
-  .scaleLinear()
-  .domain(d3.extent(data, (d) => d[yKey]))
-  .range([height, 0]);
-svg.append("g").call(d3.axisLeft(y));
+    const x = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => d.expense)])
+    .range([0, width]);
+  svg
+    .append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x));
 
-const circles = svg
-  .append("g")
-  .selectAll("circle")
-  .data(data)
-  .enter()
-  .append("circle")
-  .attr("cx", (d) => x(d.expense))
-  .attr("cy", (d) => y(d[yKey]))
-  .attr("r", 4)
-  .style("fill", "steelblue")
-  .style("opacity", 0.8);
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => d[yKey])])
+    .range([height, 0]);
+  svg.append("g").call(d3.axisLeft(y));
+
+  const circles = svg
+    .append("g")
+    .selectAll("circle")
+    .data(data)
+    .join("circle")
+    .attr("cx", (d) => x(d.expense))
+    .attr("cy", (d) => y(d[yKey]))
+    .attr("r", 4)
+    .style("fill", "steelblue")
+    .style("opacity", 0.8);
 
   function updateChart(filteredData) {
     circles.classed("selected", (d) => {
@@ -327,59 +330,46 @@ const circles = svg
   }
 
 
+ 
   svg.call(
     d3.brush()
       .extent([
         [0, 0],
         [width, height],
       ])
-      .on("end", (event) => {
-        const selection = event.selection;
-        const extent = selection && [
-          x.invert(selection[0][0]),
-          x.invert(selection[1][0]),
-          y.invert(selection[1][1]),
-          y.invert(selection[0][1]),
-        ];
-        updateOtherChart(extent);
-      })
+      .on("end", (event) => brushended(event, yKey, { x, y }, updateChart))
   );
+  svg
+  .append("text")
+  .attr("class", "x label")
+  .attr("text-anchor", "middle")
+  .attr("x", width / 2)
+  .attr("y", height + 0.95*margin.bottom)
+  .style("fill", "black")
+  .text("Expense");
+
+// Add y-axis label
+svg
+.append("text")
+.attr("class", "y label")
+.attr("text-anchor", "middle")
+.attr("y", -margin.left + 20)
+.attr("x", -height / 2)
+.attr("dy", "1em")
+.attr("transform", "rotate(-90)")
+.style("fill", "black")
+.text(yKey);
+
+
   return {
     svg,
     x,
     y,
     update: updateChart,
-    getCircles: () => circles
   };
 }
 
-
-
-let updateScatter1, updateScatter2;
-
-
-function updateOtherChart(extent) {
-  if (updateScatter1 && updateScatter2) {
-    if (!extent) {
-      updateScatter1(undefined);
-      updateScatter2(undefined);
-    } else {
-      const [x0, x1, y0, y1] = extent;
-      const filteredData = data.filter((d) => d.expense >= x0 && d.expense <= x1 && d.education >= y0 && d.education <= y1);
-      updateScatter1(filteredData);
-      updateScatter2(filteredData);
-    }
-  }
-}
-
-const scatterPlot1 = createScatterPlot("#scatter1", "education", data);
-const scatterPlot2 = createScatterPlot("#scatter2", "crimeIndex", data);
-
-updateScatter1 = scatterPlot1.update;
-updateScatter2 = scatterPlot2.update;
-
-
-function brushended(event, yKey, chart, updateCurrent, updateOther) {
+function brushended(event, yKey, chart, updateCurrent) {
   const selection = event.selection;
   const { x, y } = chart;
   const extent = selection && [
@@ -388,33 +378,83 @@ function brushended(event, yKey, chart, updateCurrent, updateOther) {
     y.invert(selection[1][1]),
     y.invert(selection[0][1]),
   ];
+
   if (extent) {
-    const filteredData = data.filter((d) => d.expense >= extent[0] && d.expense <= extent[1] && d[yKey] >= extent[2] && d[yKey] <= extent[3]);
-    updateCurrent(filteredData);
-    updateOther(filteredData);
+    const filteredData = data.filter(
+      (d) =>
+        d.expense >= extent[0] &&
+        d.expense <= extent[1] &&
+        d[yKey] >= extent[2] &&
+        d[yKey] <= extent[3]
+    );
+    updateScatter1(filteredData);
+    updateScatter2(filteredData);
   } else {
-    updateCurrent(undefined);
-    updateOther(undefined);
+    updateScatter1(undefined);
+    updateScatter2(undefined);
   }
 }
 
-scatterPlot1.svg.call(
-  d3.brush()
-    .extent([
-      [0, 0],
-      [width, height],
-    ])
-    .on("end", (event) => brushended(event, "education", { x: scatterPlot1.x, y: scatterPlot1.y }, updateScatter1, updateScatter2))
+const scatterPlot1 = createScatterPlot(
+  "#scatter1",
+  "education",
+  data,
+  brushended
+);
+const scatterPlot2 = createScatterPlot(
+  "#scatter2",
+  "crimeIndex",
+  data,
+  brushended
 );
 
-scatterPlot2.svg.call(
-  d3.brush()
-    .extent([
-      [0, 0],
-      [width, height],
-    ])
-    .on("end", (event) => brushended(event, "crimeIndex", { x: scatterPlot2.x, y: scatterPlot2.y }, updateScatter2, updateScatter1))
-);
+updateScatter1 = scatterPlot1.update;
+updateScatter2 = scatterPlot2.update;
+
+
+
+
+//_________________________________
+
+const svg2 = d3
+  .select('#my_dataviz')
+  .append('svg')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+  .append('g')
+  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+// Add X axis
+const x2 = d3.scaleLinear().domain([5, 50]).range([0, width]);
+svg2
+  .append('g')
+  .attr('transform', 'translate(0,' + height + ')')
+  .call(d3.axisBottom(x2));
+
+// Add Y axis
+const y2 = d3.scaleLinear().domain([5, 30]).range([height, 0]);
+svg2.append('g').call(d3.axisLeft(y2));
+
+// Compute the density data
+const densityData = d3
+  .contourDensity()
+  .x((d) => x2(d.expense))
+  .y((d) => y2(d.education))
+  .weight((d) => d.crimeIndex)
+  .size([width, height])
+  .bandwidth(20) // smaller = more precision in lines = more lines
+  .thresholds(20)(data);
+
+// Add the contour: several "path"
+svg2
+  .selectAll('path')
+  .data(densityData)
+  .enter()
+  .append('path')
+  .attr('d', d3.geoPath())
+  .attr('fill', 'none')
+  .attr('stroke', '#69b3a2')
+  .attr('stroke-linejoin', 'round');
       });
     });
   });
