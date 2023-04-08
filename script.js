@@ -1,3 +1,4 @@
+
 function reveal() {
   var reveals = document.querySelectorAll(".reveal");
 
@@ -320,6 +321,25 @@ function createScatterPlot(container, yKey, data, brushended) {
     .style("fill", "steelblue")
     .style("opacity", 0.8);
 
+
+    const lineGenerator = d3.line().x((d) => x(d.x)).y((d) => y(d.y));
+const regressorLine = svg.append("path").attr("class", "regressor-line").style("stroke", "red").style("stroke-width", 2).style("opacity", 0).attr("d", lineGenerator([{ x: 0, y: 0 }, { x: 0, y: 0 }]));
+
+function animateRegressorLine(data) {
+  const regressor = linearRegressor(data, x, y, "expense", yKey);
+  const lineData = regressor.line();
+
+  regressorLine
+    .transition()
+    .duration(1000)
+    .style("opacity", 1)
+    .attr("d", lineGenerator(lineData));
+
+  return regressor;
+}
+
+
+
   function updateChart(filteredData) {
     circles.classed("selected", (d) => {
       if (!filteredData) {
@@ -361,12 +381,13 @@ svg
 .text(yKey);
 
 
-  return {
-    svg,
-    x,
-    y,
-    update: updateChart,
-  };
+return {
+  svg,
+  x,
+  y,
+  update: updateChart,
+  animateRegressorLine: animateRegressorLine,
+};
 }
 
 function brushended(event, yKey, chart, updateCurrent) {
@@ -411,50 +432,50 @@ const scatterPlot2 = createScatterPlot(
 updateScatter1 = scatterPlot1.update;
 updateScatter2 = scatterPlot2.update;
 
+function linearRegressor(data, x, y, xKey, yKey) {
+  const n = data.length;
+  const sumX = d3.sum(data, (d) => d[xKey]);
+  const sumY = d3.sum(data, (d) => d[yKey]);
+  const sumXY = d3.sum(data, (d) => d[xKey] * d[yKey]);
+  const sumX2 = d3.sum(data, (d) => d[xKey] * d[xKey]);
 
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
 
+  return {
+    slope,
+    intercept,
+    predict: (xVal) => slope * xVal + intercept,
+    line: () => [
+      { x: x.domain()[0], y: slope * x.domain()[0] + intercept },
+      { x: x.domain()[1], y: slope * x.domain()[1] + intercept },
+    ],
+  };
+}
+
+function animateRegressor() {
+  const data1 = scatterPlot1.svg.selectAll("circle.selected").data();
+  const data2 = scatterPlot2.svg.selectAll("circle.selected").data();
+
+  const regressor1 = scatterPlot1.animateRegressorLine(data1);
+  const regressor2 = scatterPlot2.animateRegressorLine(data2);
+
+  const postInfo = d3.select("#post-info");
+  
+  postInfo.html(`
+    <h3>Regressor Information</h3>
+    <p><strong>Scatterplot 1 (Expense vs. Education)</strong></p>
+    <p>Slope: ${regressor1.slope.toFixed(2)}</p>
+    <p>Intercept: ${regressor1.intercept.toFixed(2)}</p>
+    <p><strong>Scatterplot 2 (Expense vs. Crime Index)</strong></p>
+    <p>Slope: ${regressor2.slope.toFixed(2)}</p>
+    <p>Intercept: ${regressor2.intercept.toFixed(2)}</p>
+  `);
+}
+document.getElementById("animate-regressor-btn").addEventListener("click", animateRegressor);
 
 //_________________________________
 
-const svg2 = d3
-  .select('#my_dataviz')
-  .append('svg')
-  .attr('width', width + margin.left + margin.right)
-  .attr('height', height + margin.top + margin.bottom)
-  .append('g')
-  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-// Add X axis
-const x2 = d3.scaleLinear().domain([5, 50]).range([0, width]);
-svg2
-  .append('g')
-  .attr('transform', 'translate(0,' + height + ')')
-  .call(d3.axisBottom(x2));
-
-// Add Y axis
-const y2 = d3.scaleLinear().domain([5, 30]).range([height, 0]);
-svg2.append('g').call(d3.axisLeft(y2));
-
-// Compute the density data
-const densityData = d3
-  .contourDensity()
-  .x((d) => x2(d.expense))
-  .y((d) => y2(d.education))
-  .weight((d) => d.crimeIndex)
-  .size([width, height])
-  .bandwidth(20) // smaller = more precision in lines = more lines
-  .thresholds(20)(data);
-
-// Add the contour: several "path"
-svg2
-  .selectAll('path')
-  .data(densityData)
-  .enter()
-  .append('path')
-  .attr('d', d3.geoPath())
-  .attr('fill', 'none')
-  .attr('stroke', '#69b3a2')
-  .attr('stroke-linejoin', 'round');
       });
     });
   });
