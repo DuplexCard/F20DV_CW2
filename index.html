@@ -106,8 +106,8 @@
     </div>
     <div class="container reveal fade-bottom">
       <p>
-        This Correlogram is a graphical and numeric representation of the
-        The Pearson correlation. This coefficient is a measure of the linear
+        This Correlogram is a graphical and numeric representation of
+        the Pearson correlation. This coefficient is a measure of the linear
         correlation between the variables. It ranges from -1 to 1, where -1
         indicates a perfect negative correlation, 0 indicates no
         correlation, and 1 indicates a perfect positive correlation.
@@ -146,15 +146,126 @@ within the region and their corresponding points on the education-expense chart.
 Examine the distribution of data points to identify trends, correlations, and
 unique patterns. Utilize this information to inform decision-making or further
 analysis.
+<br>
+<br>
+After making a selection, Click the button below to calculate the linear regressor and get its stats.
+<br>
+<br>
 
       </p>      
       <div id="post-info"></div>
-      <button id="animate-regressor-btn" onclick="animateRegressor()">Animate Regressor</button>
+      <center><button id="animate-regressor-btn" onclick="animateRegressor()">Animate Regressor</button></center>
 
     </div>
     
   </section>
  
+
+  <section>
+    <div class="container reveal fade-bottom">
+    
+      <h2>2D Density</h2>
+  
+      <div class="text-container">
+        <div class="graph">
+          <div id="my_dataviz"></div>
+          <label for="bandwidth-slider">Bandwidth: </label>
+<input type="range" id="bandwidth-slider" min="1" max="50" value="25" step="1">
+<label for="threshold-slider">Threshold: </label>
+<input type="range" id="threshold-slider" min="1" max="25" value="12" step="1">
+
+        </div>
+      </div>
+      
+    </div>
+    <div class="container reveal fade-bottom">
+      <p>
+        Contour lines represent areas with the same density or frequency of data
+        points, forming a topographical representation of the data. The crime
+        weight is used to determine the density or frequency of the points, with
+        higher crime weights contributing to a higher density in the
+        corresponding area on the graph.
+<br>
+<br>
+
+        When creating a contour density graph using D3, you can
+        manipulate two important parameters: bandwidth and threshold. These
+        parameters can be adjusted using sliders for a more interactive
+        experience.
+        <br><br>
+
+        Bandwidth: This parameter controls the smoothness of the density
+        estimation. A smaller bandwidth will result in a more detailed and
+        "noisy" graph, with closely spaced contour lines, while a larger
+        bandwidth will produce a smoother and more generalized representation of
+        the data with wider spaced contour lines. Adjusting the bandwidth slider
+        allows you to explore different levels of detail in the density
+        estimation.
+        <br><br>
+
+        Threshold: This parameter determines the number of contour levels or
+        lines to display in the graph. A lower threshold value will result in
+        more contour lines, representing smaller density intervals, while a
+        higher threshold value will reduce the number of contour lines,
+        representing larger density intervals. Adjusting the threshold slider
+        helps you focus on specific density ranges and filter out less
+        significant areas.
+        <br><br>
+
+        Contour density graphs are particularly useful for understanding complex
+        relationships and patterns in data. They can reveal trends,
+        correlations, and outliers, as well as help identify areas of high or
+        low concentration. In the case of the expense-education-crime graph, a
+        contour density graph can show how crime rates vary across different
+        combinations of expense and education levels, revealing insights that
+        might not be immediately apparent in a table or scatterplot.
+
+      </p>      
+
+    </div>
+    
+  </section>
+
+
+
+
+  <section>
+  <div class="container reveal fade-bottom">
+    
+
+    <h2>Conclusion</h2>
+    <center><p>
+      Upon close examination of the available data, it can be inferred that although
+  there seems to be a slight correlation between government spending, education,
+  and crime rates, it is not possible to establish a clear and unequivocal
+  relationship among these variables. While it is tempting to draw conclusions
+  based on the available evidence, it is important to note that other factors
+  may be at play that are not captured by the current visualization. 
+  <br><br>
+  There are several potential confounding variables that could be affecting the
+  observed relationship between government spending, education, and crime rates.
+  For example, socio-economic status, cultural factors, and demographic
+  characteristics of the population could all have an impact on these variables.
+  In addition, the quality and accessibility of social services, such as
+  healthcare and housing, may also be significant factors that affect crime
+  rates.
+  <br><br>
+  Therefore, it is critical to recognize the potential influence of these
+  extraneous factors and undertake more extensive research to examine their
+  impact on the relationship between government spending, education, and crime
+  rates. By delving into these additional factors and accounting for their
+  effects, it will be possible to gain a more complete understanding of the
+  complex relationships between these variables and to develop more effective
+  policies and strategies to address issues related to crime rates, education,
+  and government spending.
+      </p></center>
+    </div>
+  </div>
+</section>
+
+
+  
+  
 
 
   </body>

@@ -45,6 +45,13 @@ section:nth-child(4) {
 section:nth-child(5) {
   color: #ffffff;
 }
+section:nth-child(6) {
+  color: #42455a;
+  background: #ffffff;
+}
+section:nth-child(7) {
+  color: #ffffff;
+}
 section .container {
   margin: 100px;
 }
